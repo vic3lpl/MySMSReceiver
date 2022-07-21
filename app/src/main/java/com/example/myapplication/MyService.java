@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MyService extends Service {
@@ -15,10 +16,11 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 //        onTaskRemoved(intent);
-        continueMyTask(intent);
-        Toast.makeText(getApplicationContext(),"This is a service running in Background",Toast.LENGTH_SHORT).show();
-        //Log.d("azlim", String.valueOf(myInt++));
-        return START_STICKY;
+        //continueMyTask(intent);
+        //Toast.makeText(getApplicationContext(),"This is a service running in Background",Toast.LENGTH_SHORT).show();
+        Log.d("azlim", String.valueOf(myInt++));
+        startReadSMS(intent);
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -45,5 +47,14 @@ public class MyService extends Service {
             startService(restartServicIntent);
         }
 
+    }
+
+    void startReadSMS(Intent intent){
+        String ff = intent.getExtras().getString("content");
+        Intent intent2 = new Intent();
+        intent2.setAction("com.app.sms");
+        intent2.putExtra("sms",ff);
+        sendBroadcast(intent2);
+        Log.d("azlim","MyService " + ff);
     }
 }

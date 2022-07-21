@@ -14,10 +14,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     Button button;
+    TextView textView;
     //private BroadcastReceiver receiver = new smsListener();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,16 +27,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         button = findViewById(R.id.button);
         requestSmsPermission();
+        IntentFilter intentFilter = new IntentFilter("com.app.sms");
+        registerReceiver(myReceiver, intentFilter);
         //registerReceiver(receiver, new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startService(new Intent(getApplicationContext(),MyService.class));
+                //startService(new Intent(getApplicationContext(),MyService.class));
             }
         });
 
     }
+
+    private final BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //if(intent.getAction().equalsIgnoreCase("com.app.sms")) {
+                textView = findViewById(R.id.smsContent);
+                textView.setText(intent.getStringExtra("sms"));
+            //}
+        }
+    };
 
     private void requestSmsPermission() {
         String permission = Manifest.permission.RECEIVE_SMS;
