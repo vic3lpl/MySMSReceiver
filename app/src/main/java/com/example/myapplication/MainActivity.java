@@ -3,6 +3,9 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import ir.androidexception.datatable.DataTable;
+import ir.androidexception.datatable.model.DataTableHeader;
+import ir.androidexception.datatable.model.DataTableRow;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -23,14 +26,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     Button button;
     Button button2;
     Button button3;
     TextView textView;
+    DataTable dataTable ;
     //private BroadcastReceiver receiver = new smsListener();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         button2 = findViewById(R.id.button2);
         button3 = findViewById(R.id.button3);
+        dataTable = findViewById(R.id.data_table);
         requestSmsPermission();
         IntentFilter intentFilter = new IntentFilter("com.app.sms");
         registerReceiver(myReceiver, intentFilter);
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //genDataTable();
                 try {
                     readLineByLine();
                 } catch (IOException e) {
@@ -122,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void appendTxtFile() throws IOException {
-
         File root = android.os.Environment.getExternalStorageDirectory();
 
         File dir = new File (root.getAbsolutePath() + "/download");
@@ -170,12 +177,59 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        genDataTable(sList);
+//        Collections.reverse(sList);
+//        for (int c = 0; c < sList.size(); c++){
+//            elements = sList.get(c);
+//            Log.d("azlim", elements[0]);
+//            Log.d("azlim", elements[1]);
+//        }
+    }
+
+    void genDataTable(ArrayList<String[]> sList){
+        DataTableHeader header = new DataTableHeader.Builder()
+                .item("DateTime", 15)
+                .item("Content", 15)
+                .item("Sender", 15)
+                .item("Receiver", 15)
+                .item("Status", 15)
+                .item("Column6", 15)
+                .build();
+
+        ArrayList<DataTableRow> rows = new ArrayList<>();
+        String[] elements;
         Collections.reverse(sList);
         for (int c = 0; c < sList.size(); c++){
             elements = sList.get(c);
-            Log.d("azlim", elements[0]);
-            Log.d("azlim", elements[1]);
+            DataTableRow row = new DataTableRow.Builder()
+                    .value(elements[0])
+                    .value(elements[1])
+                    .value(elements[2])
+                    .value(elements[2])
+                    .value(elements[2])
+                    .value(elements[2])
+                    .build();
+            rows.add(row);
         }
+
+
+
+//        for(int i=0;i<200;i++) {
+//            Random r = new Random();
+//            int random = r.nextInt(i+1);
+//            int randomDiscount = r.nextInt(20);
+//            DataTableRow row = new DataTableRow.Builder()
+//                    .value("Product #" + i)
+//                    .value(String.valueOf(random))
+//                    .value(String.valueOf(random*1000).concat("$"))
+//                    .build();
+//            rows.add(row);
+//        }
+
+        dataTable.setHeader(header);
+        dataTable.setRows(rows);
+        dataTable.inflate(getApplicationContext());
+
     }
 
     private void loadData() {
