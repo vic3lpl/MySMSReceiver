@@ -15,6 +15,8 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     Button button;
@@ -219,8 +222,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             // for ActivityCompat#requestPermissions for more details.
             return;
         } else {
-            String mPhoneNumber = tMgr.getLine1Number();
-            textView.setText(mPhoneNumber);
+//            String mPhoneNumber = tMgr.getLine1Number();
+//            textView.setText(mPhoneNumber);
+            SubscriptionManager subManager = (SubscriptionManager) getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+            List<SubscriptionInfo> subInfoList = subManager.getActiveSubscriptionInfoList();
+            String nop = "";
+            String nop2 = "";
+            for(int i = 0; i < subInfoList.size(); i++ ) {
+                int subID = subInfoList.get(i).getSubscriptionId();
+                int simPosition = subInfoList.get(i).getSimSlotIndex();
+
+                if(subManager.isNetworkRoaming(subID)) {
+                    Log.d("azlim", "Simcard in slot " + simPosition + " has number == " + subInfoList.get(i).getNumber() + " and it is in ROAMING");
+                    nop = subInfoList.get(i).getNumber();
+                }else {
+                    nop2 = nop2 +","+ subInfoList.get(i).getNumber();
+                    Log.d("azlim", "Simcard in slot " + simPosition + " has number == " + subInfoList.get(i).getNumber() + " and it is HOME");
+                }
+
+            }
+            textView.setText(nop + " " + nop2);
         }
     }
 
