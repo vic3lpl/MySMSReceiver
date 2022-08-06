@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -10,6 +11,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ColorSpace;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         requestSmsPermission();
         IntentFilter intentFilter = new IntentFilter("com.app.sms");
         registerReceiver(myReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onNotice, new IntentFilter("Msg"));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,5 +209,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d("azlim","app Stop");
         Toast.makeText(getApplicationContext(), "onDestroy called", Toast.LENGTH_SHORT).show();
     }
+
+    private BroadcastReceiver onNotice= new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // String pack = intent.getStringExtra("package");
+            String title = intent.getStringExtra("title");
+            String text = intent.getStringExtra("text");
+
+            Log.d("azlim",title + " " + text);
+        }
+    };
 
 }
